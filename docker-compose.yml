@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+
+  backup-unit:
+    image: s3-cron-backup:site.1.0.0
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - BACKUP_NAME=wordpress
+      - CRON_WEEKLY_SCHEDULE="00 7 * * 6"
+      - CRON_MONTHLY_SCHEDULE="00 7 1 * *"
+      - CRON_YEARLY_SCHEDULE="00 7 1 1 *"
+    volumes:
+      - ./data:/data/tmp:ro

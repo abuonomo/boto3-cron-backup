@@ -1,7 +1,10 @@
-FROM alpine:latest
+FROM python:3.6.5-alpine3.7
 
 COPY entrypoint.sh /
-COPY dobackup.sh /
+COPY dobackup.py /
+COPY requirements.txt /
+
+RUN pip install -r requirements.txt
 
 RUN \
 	mkdir -p /aws && \
@@ -9,7 +12,7 @@ RUN \
 	pip install awscli && \
 	apk --purge -v del py-pip && \
 	rm /var/cache/apk/* && \
-  chmod +x /entrypoint.sh /dobackup.sh
+  chmod +x /entrypoint.sh
 
 
 ENTRYPOINT /entrypoint.sh
