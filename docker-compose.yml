@@ -9,11 +9,8 @@ services:
       - .env
     environment:
       - BACKUP_NAME=wordpress
-#      - CRON_WEEKLY_SCHEDULE="00 7 * * 6"
-#      - CRON_MONTHLY_SCHEDULE="00 7 1 * *"
-#      - CRON_YEARLY_SCHEDULE="00 7 1 1 *"
-      - CRON_WEEKLY_SCHEDULE=50 13 * * *
-      - CRON_MONTHLY_SCHEDULE=51 13 * * *
-      - CRON_YEARLY_SCHEDULE=52 13 * * *
+      - CRON_WEEKLY_SCHEDULE=00 7 * * 6
+      - CRON_MONTHLY_SCHEDULE=00 7 1 * *
+      - CRON_YEARLY_SCHEDULE=00 7 1 1 *
     volumes:
       - ./data:/data/tmp:ro
