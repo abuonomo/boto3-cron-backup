@@ -1,58 +1,16 @@
-# Docker S3 Cron Backup
+# Backup to S3 using boto3
 
-[:star: Docker Hub](https://hub.docker.com/r/peterrus/s3-cron-backup/)
-[:star: Github](https://github.com/peterrus/docker-s3-cron-backup)
+Make weekly, monthly, and yearly backups to s3 of a given docker volume.
 
-## What is it?
-A modest little container image that periodically backups any volume mounted to /data to Amazon S3 in the form of a timestamped, gzipped, tarball
+Included docker-compose file shows an example of how to run. 
+Of course, note that if you run this service with the compose file, it will be in its own network and will, therefore, (by default) be unable to access volumes from other networks. 
+You could either add this service (in docker compose) to the docker-compose file with the volume you want to snapshot, or use the external volumes command in the extant one. 
 
-## Great, but how does it work?
-An Alpine Linux instance runs nothing more than crond with a crontab that contains nothing more than one single entry that triggers the backup script. When this script is run, the volume mounted at /data gets tarred, gzipped and uploaded to a S3 bucket. Afterwards the archive gets deleted from the container. The mounted volume, of course, will be left untouched.
+The example given simply backs up a local directory called tmp to the given s3 bucket. 
 
-I invite you to check out the source of this image, it's rather simple and should be easy to understand. If this isn't the case, feel free to open an issue on [github](https://github.com/peterrus/docker-s3-cron-backup)
-
-*Pull requests welcome*
-
-## Now, how do I use it?
-The container is configured via a set of environment variables:
-- AWS_ACCESS_KEY: Get this from amazon IAM
-- AWS_SECRET_ACCESS_KEY: Get this from amazon IAM, **you should keep this a secret**
-- S3_BUCKET_URL: in most cases this should be s3://name-of-your-bucket/
-- AWS_DEFAULT_REGION: The AWS region your bucket resides in
-- CRON_SCHEDULE: Check out [crontab.guru](https://crontab.guru/) for some examples:
-- BACKUP_NAME: A name to identify your backup among the other files in your bucket, it will be postfixed with the current timestamp (date and time)
-
-All environment variables prefixed with 'AWS_' are directly used by [awscli](https://aws.amazon.com/cli/) that this image heavily relies on.
-
-### Directly via Docker
+You must go the the env.credentials file and change the values therein to the correct values for your s3 bucket. 
+Then change the name of env.example to .env
 ```
-docker run \
-  -e AWS_ACCESS_KEY_ID=SOME8AWS3ACCESS9KEY \
-  -e AWS_SECRET_ACCESS_KEY=sUp3rS3cr3tK3y0fgr34ts3cr3cy \
-  -e S3_BUCKET_URL=s3://name-of-your-bucket/ \
-  -e AWS_DEFAULT_REGION=your-aws-region \
-  -e CRON_SCHEDULE="0 * * * *" \
-  -e BACKUP_NAME=make-something-up \
-  -v /your/awesome/data:/data:ro \
-  peterrus/s3-cron-backup
+mv env.example .env
 ```
-
-### Docker-compose
-```
-# docker-compose.yml
-version: '2'
-
-services:
-  my-backup-unit:
-    image: peterrus/s3-cron-backup
-    environment:
-      - AWS_ACCESS_KEY_ID=SOME8AWS3ACCESS9KEY
-      - AWS_SECRET_ACCESS_KEY=sUp3rS3cr3tK3y0fgr34ts3cr3cy
-      - S3_BUCKET_URL=s3://name-of-your-bucket/
-      - AWS_DEFAULT_REGION=your-aws-region
-      - CRON_SCHEDULE=0 * * * * # run every hour
-      - BACKUP_NAME=make-something-up
-    volumes:
-      - /your/awesome/data:/data:ro #use ro to make sure the volume gets mounted read-only
-    restart: always
-```
+Make sure you don't commit your API keys!
